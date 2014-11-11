@@ -12,7 +12,6 @@ BOOST_FUSION_ADAPT_STRUCT(date_time::moment,
     (unsigned, year)
     (unsigned, hour)
     (unsigned, minute)
-    (unsigned, second)
     (int, time_zone_offset)
 );
 

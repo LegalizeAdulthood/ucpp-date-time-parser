@@ -117,6 +117,8 @@ Here are some tips for creating parsers with Spirit:
   write `rule<Iter, bool(), skipper> boolean;`, not `rule<Iter, bool, skipper> boolean;`
 - Order the elements of a struct in `BOOST_FUSION_ADAPT_STRUCT` so that it is convenient
   for your parser attribute sequence.
+- When using `BOOST_FUSION_ADAPT_STRUCT`, make sure that your grammar generates attributes
+  for each adapted struct member.
 - Spirit parsers leverage templates heavily to achieve fast runtime at the expense of
   compile time.  Isolate your parsers behind an application specific API.  The parser
   implementation only needs to be recompiled when the parser changes.  The parser can
