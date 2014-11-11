@@ -18,3 +18,12 @@ BOOST_AUTO_TEST_CASE(january_1st_2010_noon_utc)
     BOOST_REQUIRE_EQUAL(0, value.second);
     BOOST_REQUIRE_EQUAL(0, value.time_zone_offset);
 }
+
+BOOST_AUTO_TEST_CASE(february)
+{
+    const std::string text{"01 Feb 2010 12:00 +0000"};
+
+    const auto value = date_time::parse(text);
+
+    BOOST_REQUIRE_EQUAL(date_time::February, value.month);
+}
