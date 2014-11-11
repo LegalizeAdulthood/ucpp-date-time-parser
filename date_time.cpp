@@ -16,6 +16,27 @@ BOOST_FUSION_ADAPT_STRUCT(date_time::moment,
     (int, time_zone_offset)
 );
 
+namespace
+{
+
+typedef ascii::space_type skipper;
+
+template <typename Iter>
+struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
+{
+    date_time_grammar() : date_time_grammar::base_type{start}
+    {
+        typedef uint_parser<unsigned, 10, 2, 2> digit_2;
+        typedef uint_parser<unsigned, 10, 4, 4> digit_4;
+        start = digit_2() >> lit("Jan") >> attr(date_time::January) >> digit_4() >>
+                digit_2() >> ':' >> digit_2() >> '+' >> digit_4();
+    };
+
+    rule<Iter, date_time::moment(), skipper> start;
+};
+
+}
+
 namespace date_time
 {
 
@@ -23,12 +44,8 @@ moment parse(std::string const& text)
 {
     moment result{};
     std::string::const_iterator start{text.begin()};
-    typedef uint_parser<unsigned, 10, 2, 2> digit_2;
-    typedef uint_parser<unsigned, 10, 4, 4> digit_4;
-    auto parser = digit_2() >> lit("Jan") >> attr(January) >> digit_4() >>
-            digit_2() >> ':' >> digit_2() >> '+' >> digit_4();
     if (phrase_parse(start, text.end(),
-            parser,
+            date_time_grammar<std::string::const_iterator>(),
             ascii::space, result)
         && start == text.end())
     {
