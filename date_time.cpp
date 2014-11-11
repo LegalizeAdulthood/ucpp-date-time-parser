@@ -12,6 +12,7 @@ BOOST_FUSION_ADAPT_STRUCT(date_time::moment,
     (unsigned, year)
     (unsigned, hour)
     (unsigned, minute)
+    (unsigned, second)
     (int, time_zone_offset)
 );
 
@@ -41,10 +42,12 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         uint_parser<unsigned, 10, 2, 2> digit_2;
         uint_parser<unsigned, 10, 4, 4> digit_4;
         int_parser<int, 10, 4, 4> time_zone_offset;
-        start = digit_1_2 >> month_names >> digit_4 >>
-            digit_2 >> ':' >> digit_2 >> time_zone_offset;
+        seconds = (':' >> digit_2) | attr(0);
+        start = digit_1_2 >> month_names >> digit_4
+            >> digit_2 >> ':' >> digit_2 >> seconds >> time_zone_offset;
     };
 
+    rule<Iter, unsigned(), skipper> seconds;
     symbols<char const, date_time::months> month_names;
     rule<Iter, date_time::moment(), skipper> start;
 };

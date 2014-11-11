@@ -54,3 +54,12 @@ BOOST_AUTO_TEST_CASE(negative_time_zone_offset)
 
     BOOST_REQUIRE_EQUAL(-400, value.time_zone_offset);
 }
+
+BOOST_AUTO_TEST_CASE(time_with_seconds)
+{
+    const std::string text{"9 Jan 2010 12:00:45 -0400"};
+
+    const auto value = date_time::parse(text);
+
+    BOOST_REQUIRE_EQUAL(45, value.second);
+}
