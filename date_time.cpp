@@ -38,10 +38,10 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
             ("Oct", date_time::October)
             ("Nov", date_time::November)
             ("Dec", date_time::December);
-        typedef uint_parser<unsigned, 10, 2, 2> digit_2;
-        typedef uint_parser<unsigned, 10, 4, 4> digit_4;
-        start = digit_2() >> month_names >> digit_4() >>
-                digit_2() >> ':' >> digit_2() >> '+' >> digit_4();
+        uint_parser<unsigned, 10, 2, 2> digit_2;
+        uint_parser<unsigned, 10, 4, 4> digit_4;
+        start = digit_2 >> month_names >> digit_4 >>
+            digit_2 >> ':' >> digit_2 >> '+' >> digit_4;
     };
 
     symbols<char const, date_time::months> month_names;
@@ -58,7 +58,7 @@ moment parse(std::string const& text)
     moment result{};
     std::string::const_iterator start{text.begin()};
     if (phrase_parse(start, text.end(),
-            date_time_grammar<std::string::const_iterator>(),
+            date_time_grammar<std::string::const_iterator>{},
             ascii::space, result)
         && start == text.end())
     {
