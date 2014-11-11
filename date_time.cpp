@@ -57,7 +57,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
     };
 
     symbols<char const, date_time::days> day_names;
-    rule<Iter, date_time::days(), skipper> week_day;
+    rule<Iter, date_time::days()> week_day;
     rule<Iter, unsigned(), skipper> seconds;
     symbols<char const, date_time::months> month_names;
     rule<Iter, date_time::moment(), skipper> start;

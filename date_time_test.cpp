@@ -81,3 +81,8 @@ BOOST_AUTO_TEST_CASE(no_space_allowed_in_time)
     BOOST_REQUIRE_THROW(date_time::parse("9 Jan 2010 12:00 :45 +0000"), std::domain_error);
     BOOST_REQUIRE_THROW(date_time::parse("9 Jan 2010 12:00: 45 +0000"), std::domain_error);
 }
+
+BOOST_AUTO_TEST_CASE(no_space_allowed_in_weekday)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("Sat , 9 Jan 2010 12:00:45 -0400"), std::domain_error);
+}
