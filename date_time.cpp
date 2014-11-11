@@ -7,6 +7,7 @@
 using namespace boost::spirit::qi;
 
 BOOST_FUSION_ADAPT_STRUCT(date_time::moment,
+    (date_time::days, week_day)
     (unsigned, day)
     (date_time::months, month)
     (unsigned, year)
@@ -38,15 +39,25 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
             ("Oct", date_time::October)
             ("Nov", date_time::November)
             ("Dec", date_time::December);
+        day_names.add("Mon", date_time::Monday)
+            ("Tue", date_time::Tuesday)
+            ("Wed", date_time::Wednesday)
+            ("Thu", date_time::Thursday)
+            ("Fri", date_time::Friday)
+            ("Sat", date_time::Saturday)
+            ("Sun", date_time::Sunday);
         uint_parser<unsigned, 10, 1, 2> digit_1_2;
         uint_parser<unsigned, 10, 2, 2> digit_2;
         uint_parser<unsigned, 10, 4, 4> digit_4;
         int_parser<int, 10, 4, 4> time_zone_offset;
         seconds = (':' >> digit_2) | attr(0);
-        start = digit_1_2 >> month_names >> digit_4
+        week_day = (day_names >> ',') | attr(date_time::Unspecified);
+        start = week_day >> digit_1_2 >> month_names >> digit_4
             >> digit_2 >> ':' >> digit_2 >> seconds >> time_zone_offset;
     };
 
+    symbols<char const, date_time::days> day_names;
+    rule<Iter, date_time::days(), skipper> week_day;
     rule<Iter, unsigned(), skipper> seconds;
     symbols<char const, date_time::months> month_names;
     rule<Iter, date_time::moment(), skipper> start;

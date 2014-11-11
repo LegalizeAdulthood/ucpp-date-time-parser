@@ -7,6 +7,18 @@
 namespace date_time
 {
 
+enum days
+{
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday,
+    Unspecified
+};
+
 enum months
 {
     January = 1,
@@ -25,6 +37,7 @@ enum months
 
 struct moment
 {
+    days week_day;
     unsigned year;
     months month;
     unsigned day;

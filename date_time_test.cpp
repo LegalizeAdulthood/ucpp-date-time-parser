@@ -10,6 +10,7 @@ BOOST_AUTO_TEST_CASE(january_1st_2010_noon_utc)
 
     const auto value = date_time::parse(text);
 
+    BOOST_REQUIRE_EQUAL(date_time::Unspecified, value.week_day);
     BOOST_REQUIRE_EQUAL(2010, value.year);
     BOOST_REQUIRE_EQUAL(date_time::January, value.month);
     BOOST_REQUIRE_EQUAL(1, value.day);
@@ -62,4 +63,13 @@ BOOST_AUTO_TEST_CASE(time_with_seconds)
     const auto value = date_time::parse(text);
 
     BOOST_REQUIRE_EQUAL(45, value.second);
+}
+
+BOOST_AUTO_TEST_CASE(weekday)
+{
+    const std::string text{"Sat, 9 Jan 2010 12:00:45 -0400"};
+
+    const auto value = date_time::parse(text);
+
+    BOOST_REQUIRE_EQUAL(date_time::Saturday, value.week_day);
 }
