@@ -40,8 +40,9 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         uint_parser<unsigned, 10, 1, 2> digit_1_2;
         uint_parser<unsigned, 10, 2, 2> digit_2;
         uint_parser<unsigned, 10, 4, 4> digit_4;
+        int_parser<int, 10, 4, 4> time_zone_offset;
         start = digit_1_2 >> month_names >> digit_4 >>
-            digit_2 >> ':' >> digit_2 >> '+' >> digit_4;
+            digit_2 >> ':' >> digit_2 >> time_zone_offset;
     };
 
     symbols<char const, date_time::months> month_names;
