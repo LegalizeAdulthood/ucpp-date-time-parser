@@ -111,8 +111,12 @@ Here are some tips for creating parsers with Spirit:
 - Develop your parsers incrementally, starting with the smallest parsable unit.  Drive
   your parser forward step-by-step with unit tests to keep everything working as you
   enhance the parser.
+- Extract grammar rules incrementally as you build up functionality.  Refactor out rules
+  in your grammar after passing new test cases.
 - Remember that rule and grammar attribute types are specified by function signatures:
   write `rule<Iter, bool(), skipper> boolean;`, not `rule<Iter, bool, skipper> boolean;`
+- Order the elements of a struct in `BOOST_FUSION_ADAPT_STRUCT` so that it is convenient
+  for your parser attribute sequence.
 - Spirit parsers leverage templates heavily to achieve fast runtime at the expense of
   compile time.  Isolate your parsers behind an application specific API.  The parser
   implementation only needs to be recompiled when the parser changes.  The parser can
