@@ -50,10 +50,10 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         uint_parser<unsigned, 10, 2, 2> digit_2;
         uint_parser<unsigned, 10, 4, 4> digit_4;
         int_parser<int, 10, 4, 4> time_zone_offset;
-        seconds = (':' >> digit_2) | attr(0);
+        seconds = no_skip[(':' >> digit_2) | attr(0)];
         week_day = (day_names >> ',') | attr(date_time::Unspecified);
         start = week_day >> digit_1_2 >> month_names >> digit_4
-            >> digit_2 >> ':' >> digit_2 >> seconds >> time_zone_offset;
+            >> digit_2 >> no_skip[lit(':')] >> no_skip[digit_2] >> seconds >> time_zone_offset;
     };
 
     symbols<char const, date_time::days> day_names;
