@@ -38,9 +38,10 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
             ("Oct", date_time::October)
             ("Nov", date_time::November)
             ("Dec", date_time::December);
+        uint_parser<unsigned, 10, 1, 2> digit_1_2;
         uint_parser<unsigned, 10, 2, 2> digit_2;
         uint_parser<unsigned, 10, 4, 4> digit_4;
-        start = digit_2 >> month_names >> digit_4 >>
+        start = digit_1_2 >> month_names >> digit_4 >>
             digit_2 >> ':' >> digit_2 >> '+' >> digit_4;
     };
 

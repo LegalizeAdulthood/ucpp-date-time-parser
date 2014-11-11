@@ -27,3 +27,12 @@ BOOST_AUTO_TEST_CASE(february)
 
     BOOST_REQUIRE_EQUAL(date_time::February, value.month);
 }
+
+BOOST_AUTO_TEST_CASE(single_digit_day)
+{
+    const std::string text{"9 Jan 2010 12:00 +0000"};
+
+    const auto value = date_time::parse(text);
+
+    BOOST_REQUIRE_EQUAL(9, value.day);
+}
