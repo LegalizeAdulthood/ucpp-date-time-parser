@@ -4,6 +4,26 @@ This is an example of a recursive descent [RFC5322 date](http://tools.ietf.org/h
 This parser is developed incrementally, commit by commit.  Browse the tags to see how
 this parser evolved from simple cases up to handling the full RFC5322 date grammar.
 
+Tips
+====
+Here are some tips for creating parsers with Spirit:
+
+- Develop your parsers incrementally, starting with the smallest parsable unit.  Drive
+  your parser forward step-by-step with unit tests to keep everything working as you
+  enhance the parser.
+- Extract grammar rules incrementally as you build up functionality.  Refactor out rules
+  in your grammar after passing new test cases.
+- Remember that rule and grammar attribute types are specified by function signatures:
+  write `rule<Iter, bool(), skipper> boolean;`, not `rule<Iter, bool, skipper> boolean;`
+- Order the elements of a struct in `BOOST_FUSION_ADAPT_STRUCT` so that it is convenient
+  for your parser attribute sequence.
+- When using `BOOST_FUSION_ADAPT_STRUCT`, make sure that your grammar generates attributes
+  for each adapted struct member.
+- Spirit parsers leverage templates heavily to achieve fast runtime at the expense of
+  compile time.  Isolate your parsers behind an application specific API.  The parser
+  implementation only needs to be recompiled when the parser changes.  The parser can
+  be reused in as many places as possible without recompiling the parser.
+
 RFC 5322 date productions
 =========================
 ```
@@ -103,23 +123,3 @@ RFC 5322 date productions
 
    DIGIT           =   %x30-39  ; 0-9
 ```
-
-Tips
-====
-Here are some tips for creating parsers with Spirit:
-
-- Develop your parsers incrementally, starting with the smallest parsable unit.  Drive
-  your parser forward step-by-step with unit tests to keep everything working as you
-  enhance the parser.
-- Extract grammar rules incrementally as you build up functionality.  Refactor out rules
-  in your grammar after passing new test cases.
-- Remember that rule and grammar attribute types are specified by function signatures:
-  write `rule<Iter, bool(), skipper> boolean;`, not `rule<Iter, bool, skipper> boolean;`
-- Order the elements of a struct in `BOOST_FUSION_ADAPT_STRUCT` so that it is convenient
-  for your parser attribute sequence.
-- When using `BOOST_FUSION_ADAPT_STRUCT`, make sure that your grammar generates attributes
-  for each adapted struct member.
-- Spirit parsers leverage templates heavily to achieve fast runtime at the expense of
-  compile time.  Isolate your parsers behind an application specific API.  The parser
-  implementation only needs to be recompiled when the parser changes.  The parser can
-  be reused in as many places as possible without recompiling the parser.
