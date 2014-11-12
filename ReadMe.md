@@ -1,8 +1,10 @@
-This is an example of a recursive descent [RFC5322 date](http://tools.ietf.org/html/rfc5322) parser written using
+This is an example of a recursive descent [RFC 5322 date](http://tools.ietf.org/html/rfc5322) parser written using
 [Boost.Spirit](http://www.boost.org/doc/libs/1_57_0/libs/spirit/doc/html/index.html).
 
 This parser is developed incrementally, commit by commit.  Browse the tags to see how
-this parser evolved from simple cases up to handling the full RFC5322 date grammar.
+this parser evolved from simple cases up to handling the basic RFC 5322 date grammar.
+No attempt is made to handle all the "obsolete" elements of RFC 5322, nor is any
+attempt made to gracefully handle ill formed content.
 
 Tips
 ====
@@ -24,7 +26,7 @@ Here are some tips for creating parsers with Spirit:
   implementation only needs to be recompiled when the parser changes.  The parser can
   be reused in as many places as possible without recompiling the parser.
 
-RFC 5322 date productions
+RFC 5322 Date Productions
 =========================
 ```
    date-time       =   [ day-of-week "," ] date time [CFWS]
