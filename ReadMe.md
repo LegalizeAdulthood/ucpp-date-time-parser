@@ -14,7 +14,7 @@ Here are some tips for creating parsers with Spirit:
 - Extract grammar rules incrementally as you build up functionality.  Refactor out rules
   in your grammar after passing new test cases.
 - Remember that rule and grammar attribute types are specified by function signatures:
-  write `rule<Iter, bool(), skipper> boolean;`, not `rule<Iter, bool, skipper> boolean;`
+  write `rule<Iter, bool(), skipper> boolean`, not `rule<Iter, bool, skipper> boolean`.
 - Order the elements of a struct in `BOOST_FUSION_ADAPT_STRUCT` so that it is convenient
   for your parser attribute sequence.
 - When using `BOOST_FUSION_ADAPT_STRUCT`, make sure that your grammar generates attributes
