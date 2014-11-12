@@ -6,15 +6,23 @@
 
 using namespace boost::spirit::qi;
 
-BOOST_FUSION_ADAPT_STRUCT(date_time::moment,
+BOOST_FUSION_ADAPT_STRUCT(date_time::date,
     (date_time::days, week_day)
     (unsigned, day)
     (date_time::months, month)
     (unsigned, year)
+);
+
+BOOST_FUSION_ADAPT_STRUCT(date_time::time,
     (unsigned, hour)
     (unsigned, minute)
     (unsigned, second)
     (int, time_zone_offset)
+);
+
+BOOST_FUSION_ADAPT_STRUCT(date_time::moment,
+    (date_time::date, first)
+    (date_time::time, second)
 );
 
 namespace
@@ -50,16 +58,20 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         uint_parser<unsigned, 10, 2, 2> digit_2;
         uint_parser<unsigned, 10, 4, 4> digit_4;
         int_parser<int, 10, 4, 4> time_zone_offset;
-        seconds = no_skip[(':' >> digit_2) | attr(0)];
+        seconds = (':' >> digit_2) | attr(0);
         week_day = (day_names >> ',') | attr(date_time::Unspecified);
-        start = week_day >> digit_1_2 >> month_names >> digit_4
-            >> digit_2 >> no_skip[lit(':')] >> no_skip[digit_2] >> seconds >> time_zone_offset;
+        date_part = week_day >> digit_1_2 >> month_names >> digit_4;
+        time_part = digit_2 >> no_skip[lit(':')] >> no_skip[digit_2]
+            >> no_skip[seconds] >> time_zone_offset;
+        start = date_part >> time_part;
     };
 
     symbols<char const, date_time::days> day_names;
     rule<Iter, date_time::days()> week_day;
-    rule<Iter, unsigned(), skipper> seconds;
+    rule<Iter, unsigned()> seconds;
     symbols<char const, date_time::months> month_names;
+    rule<Iter, date_time::date(), skipper> date_part;
+    rule<Iter, date_time::time(), skipper> time_part;
     rule<Iter, date_time::moment(), skipper> start;
 };
 

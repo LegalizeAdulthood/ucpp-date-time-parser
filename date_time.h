@@ -3,6 +3,7 @@
 #define DATE_TIME_H
 
 #include <string>
+#include <utility>
 
 namespace date_time
 {
@@ -35,17 +36,23 @@ enum months
     December
 };
 
-struct moment
+struct date
 {
     days week_day;
     unsigned year;
     months month;
     unsigned day;
+};
+
+struct time
+{
     unsigned hour;
     unsigned minute;
     unsigned second;
     int time_zone_offset;
 };
+
+typedef std::pair<date, time> moment;
 
 moment parse(std::string const& text);
 
