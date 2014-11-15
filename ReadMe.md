@@ -40,6 +40,8 @@ RFC 5322 Date Productions
 
    day             =   ([FWS] 1*2DIGIT FWS) / obs-day
 
+   DIGIT           =   %x30-39  ; 0-9
+
    month           =   "Jan" / "Feb" / "Mar" / "Apr" /
                        "May" / "Jun" / "Jul" / "Aug" /
                        "Sep" / "Oct" / "Nov" / "Dec"
@@ -60,6 +62,35 @@ RFC 5322 Date Productions
 
    FWS             =   ([*WSP CRLF] 1*WSP) /  obs-FWS
                                           ; Folding white space
+
+   CFWS            =   (1*([FWS] comment) [FWS]) / FWS
+
+   comment         =   "(" *([FWS] ccontent) [FWS] ")"
+
+   ccontent        =   ctext / quoted-pair / comment
+
+   ctext           =   %d33-39 /          ; Printable US-ASCII
+                       %d42-91 /          ;  characters not including
+                       %d93-126 /         ;  "(", ")", or "\"
+                       obs-ctext
+
+   quoted-pair     =   ("\" (VCHAR / WSP)) / obs-qp
+
+   VCHAR           =   %x21-7E
+                       ; visible (printing) characters
+
+   WSP             =   SP / HTAB
+                       ; white space
+
+   SP              =   %x20
+
+   HTAB            =   %x09     ; horizontal tab
+
+   CRLF            =   CR LF    ; Internet standard newline
+
+   LF              =   %x0A     ; linefeed
+
+   CR              =   %x0D     ; carriage return
 
    obs-day-of-week =   [CFWS] day-name [CFWS]
 
@@ -82,17 +113,6 @@ RFC 5322 Date Productions
                        "PST" / "PDT" /    ; Pacific:  - 8/ - 7
                                           ;
 
-   CFWS            =   (1*([FWS] comment) [FWS]) / FWS
-
-   comment         =   "(" *([FWS] ccontent) [FWS] ")"
-
-   ccontent        =   ctext / quoted-pair / comment
-
-   ctext           =   %d33-39 /          ; Printable US-ASCII
-                       %d42-91 /          ;  characters not including
-                       %d93-126 /         ;  "(", ")", or "\"
-                       obs-ctext
-
    obs-ctext       =   obs-NO-WS-CTL
 
    obs-NO-WS-CTL   =   %d1-8 /            ; US-ASCII control
@@ -101,27 +121,7 @@ RFC 5322 Date Productions
                        %d14-31 /          ;  return, line feed, and
                        %d127              ;  white space characters
 
-   quoted-pair     =   ("\" (VCHAR / WSP)) / obs-qp
-
-   VCHAR           =   %x21-7E
-                       ; visible (printing) characters
-
-   WSP             =   SP / HTAB
-                       ; white space
-
-   SP              =   %x20
-
-   HTAB            =   %x09     ; horizontal tab
-
    obs-qp          =   "\" (%d0 / obs-NO-WS-CTL / LF / CR)
 
-   LF              =   %x0A     ; linefeed
-
-   CR              =   %x0D     ; carriage return
-
    obs-FWS         =   1*WSP *(CRLF 1*WSP)
-
-   CRLF            =   CR LF    ; Internet standard newline
-
-   DIGIT           =   %x30-39  ; 0-9
 ```
