@@ -147,5 +147,28 @@ BOOST_AUTO_TEST_CASE(leap_second_only_added_on_last_day_of_June_or_December)
 
 BOOST_AUTO_TEST_CASE(commented_date)
 {
-    date_time::parse("Sat, 9 Jan 2010 12:00:45 -0400 (Starting Date)");
+    BOOST_REQUIRE_NO_THROW(date_time::parse("Sat, 9 Jan 2010 12:00:45 -0400 (Starting Date)"));
+}
+
+BOOST_AUTO_TEST_CASE(comment_with_quoted_pair)
+{
+    BOOST_REQUIRE_NO_THROW(date_time::parse(R"date(Sat, 9 Jan 2010 12:00:45 -0400 (Starting\ Date))date"));
+}
+
+BOOST_AUTO_TEST_CASE(invalid_quoted_pair_in_comment)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("Sat, 9 Jan 2010 12:00:45 -0400 (\\\r)"), std::domain_error);
+}
+
+BOOST_AUTO_TEST_CASE(comment_inside_comment)
+{
+    BOOST_REQUIRE_NO_THROW(date_time::parse(R"date(Sat, 9 Jan 2010 12:00:45 -0400 (Comment (with another inside)))date"));
+}
+
+BOOST_AUTO_TEST_CASE(comment_delimiters_must_be_matched_or_quoted)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("Sat, 9 Jan 2010 12:00:45 -0400 (Starting (Date)"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("Sat, 9 Jan 2010 12:00:45 -0400 (Starting Date))"), std::domain_error);
+    BOOST_REQUIRE_NO_THROW(date_time::parse(R"date(Sat, 9 Jan 2010 12:00:45 -0400 (Starting \(Date))date"));
+    BOOST_REQUIRE_NO_THROW(date_time::parse(R"date(Sat, 9 Jan 2010 12:00:45 -0400 (Starting Date\)))date"));
 }
