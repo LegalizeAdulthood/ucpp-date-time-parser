@@ -135,7 +135,8 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         time_part %= digit_2[&validate_hour]
             >> no_skip[lit(':')] >> no_skip[digit_2[&validate_minute]]
             >> no_skip[seconds[&validate_second]] >> time_zone_offset;
-        date_time %= date_part[&validate_date] >> time_part;
+        cfws = '(' >> *(omit[char_] - ')') >> ')';
+        date_time %= date_part[&validate_date] >> time_part >> (cfws | eps);
         start %= date_time[&validate_date_time];
     };
 
@@ -148,6 +149,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
     rule<Iter, unsigned()> seconds;
     rule<Iter, date_time::time(), skipper> time_part;
     rule<Iter, date_time::moment(), skipper> date_time;
+    rule<Iter, unused_type, skipper> cfws;
     rule<Iter, date_time::moment(), skipper> start;
 };
 

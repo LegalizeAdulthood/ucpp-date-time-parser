@@ -144,3 +144,8 @@ BOOST_AUTO_TEST_CASE(leap_second_only_added_on_last_day_of_June_or_December)
     BOOST_REQUIRE_THROW(date_time::parse("31 Dec 2008 23:00:60 +0000"), std::domain_error);
     BOOST_REQUIRE_NO_THROW(date_time::parse("31 Dec 2008 23:59:60 +0000"));
 }
+
+BOOST_AUTO_TEST_CASE(commented_date)
+{
+    date_time::parse("Sat, 9 Jan 2010 12:00:45 -0400 (Starting Date)");
+}
