@@ -5,6 +5,7 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <sstream>
 #include <stdexcept>
 
 using namespace boost::spirit::qi;
@@ -33,22 +34,25 @@ namespace
 
 typedef ascii::space_type skipper;
 
-void validate_day(int day)
+void validate_min_max(char const* name,
+    unsigned value, unsigned min_value, unsigned max_value)
 {
-    if (day < 1 || day > 31) {
-        throw std::domain_error("day "
-            + boost::lexical_cast<std::string>(day)
-            + " out of range 1-31.");
+    if (value < min_value || value > max_value) {
+        std::ostringstream message;
+        message << name << ' ' << value << " out of range "
+            << min_value << '-' << max_value;
+        throw std::domain_error(message.str());
     }
 }
 
-void validate_year(int year)
+void validate_day(unsigned day)
 {
-    if (year < 1900) {
-        throw std::domain_error("year "
-            + boost::lexical_cast<std::string>(year)
-            + " before 1900.");
-    }
+    validate_min_max("day", day, 1, 31);
+}
+
+void validate_year(unsigned year)
+{
+    validate_min_max("year", year, 1900, 9999);
 }
 
 void validate_date(const ::date_time::date& date)
@@ -65,6 +69,33 @@ void validate_date(const ::date_time::date& date)
         throw std::domain_error("day "
             + boost::lexical_cast<std::string>(date.day)
             + " invalid for month");
+    }
+}
+
+void validate_hour(unsigned hour)
+{
+    validate_min_max("hour", hour, 0, 23);
+}
+
+void validate_minute(unsigned minute)
+{
+    validate_min_max("minute", minute, 0, 59);
+}
+
+void validate_second(unsigned second)
+{
+    validate_min_max("second", second, 0, 60);
+}
+
+void validate_date_time(::date_time::moment const& moment)
+{
+    if (moment.second.second == 60
+        && !((moment.first.month == ::date_time::June
+            || moment.first.month == ::date_time::December)
+            && moment.second.hour == 23
+            && moment.second.minute == 59)) {
+        throw std::domain_error(
+            "leap second only allowed on last day of June or December");
     }
 }
 
@@ -101,9 +132,11 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         day_number %= digit_1_2[&validate_day];
         year_number %= digit_4[&validate_year];
         date_part = week_day >> day_number >> month_names >> year_number;
-        time_part = digit_2 >> no_skip[lit(':')] >> no_skip[digit_2]
-            >> no_skip[seconds] >> time_zone_offset;
-        start %= date_part[&validate_date] >> time_part;
+        time_part %= digit_2[&validate_hour]
+            >> no_skip[lit(':')] >> no_skip[digit_2[&validate_minute]]
+            >> no_skip[seconds[&validate_second]] >> time_zone_offset;
+        date_time %= date_part[&validate_date] >> time_part;
+        start %= date_time[&validate_date_time];
     };
 
     symbols<char const, date_time::days> day_names;
@@ -114,6 +147,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
     rule<Iter, date_time::date(), skipper> date_part;
     rule<Iter, unsigned()> seconds;
     rule<Iter, date_time::time(), skipper> time_part;
+    rule<Iter, date_time::moment(), skipper> date_time;
     rule<Iter, date_time::moment(), skipper> start;
 };
 

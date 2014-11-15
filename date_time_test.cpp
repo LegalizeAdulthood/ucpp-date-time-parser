@@ -116,3 +116,31 @@ BOOST_AUTO_TEST_CASE(day_name_not_matching_date_is_invalid)
 {
     BOOST_REQUIRE_THROW(date_time::parse("Tue, 1 Feb 2008 12:00:45 +0000"), std::domain_error);
 }
+
+BOOST_AUTO_TEST_CASE(hours_outside_0_to_23_are_invalid)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("1 Feb 2008 24:00:00 +0000"), std::domain_error);
+}
+
+BOOST_AUTO_TEST_CASE(minutes_outside_0_to_59_are_invalid)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("1 Feb 2008 23:60:00 +0000"), std::domain_error);
+}
+
+BOOST_AUTO_TEST_CASE(seconds_outside_0_to_60_are_invalid)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("1 Feb 2008 23:59:61 +0000"), std::domain_error);
+}
+
+BOOST_AUTO_TEST_CASE(leap_second_only_added_on_last_day_of_June_or_December)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("1 Feb 2008 23:59:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("30 Jun 2008 00:00:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("30 Jun 2008 00:59:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("30 Jun 2008 23:00:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_NO_THROW(date_time::parse("30 Jun 2008 23:59:60 +0000"));
+    BOOST_REQUIRE_THROW(date_time::parse("31 Dec 2008 00:00:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("31 Dec 2008 00:59:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("31 Dec 2008 23:00:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_NO_THROW(date_time::parse("31 Dec 2008 23:59:60 +0000"));
+}
