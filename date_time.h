@@ -10,13 +10,13 @@ namespace date_time
 
 enum days
 {
+    Sunday = 0,
     Monday,
     Tuesday,
     Wednesday,
     Thursday,
     Friday,
     Saturday,
-    Sunday,
     Unspecified
 };
 

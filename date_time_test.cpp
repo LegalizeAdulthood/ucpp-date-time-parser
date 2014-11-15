@@ -86,3 +86,33 @@ BOOST_AUTO_TEST_CASE(no_space_allowed_in_weekday)
 {
     BOOST_REQUIRE_THROW(date_time::parse("Sat , 9 Jan 2010 12:00:45 -0400"), std::domain_error);
 }
+
+BOOST_AUTO_TEST_CASE(day_numbers_outside_1_to_31_are_invalid)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("0 Jan 2010 12:00:45 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("32 Jan 2010 12:00:45 +0000"), std::domain_error);
+}
+
+BOOST_AUTO_TEST_CASE(years_before_1900_are_invalid)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("1 Jan 1899 12:00:45 +0000"), std::domain_error);
+}
+
+BOOST_AUTO_TEST_CASE(day_numbers_outside_month_range_are_invalid)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("29 Feb 2010 12:00:45 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("31 Apr 2010 12:00:45 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("31 Jun 2010 12:00:45 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("31 Sep 2010 12:00:45 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("31 Nov 2010 12:00:45 +0000"), std::domain_error);
+}
+
+BOOST_AUTO_TEST_CASE(leap_days_are_valid)
+{
+    BOOST_REQUIRE_NO_THROW(date_time::parse("29 Feb 2008 12:00:45 +0000"));
+}
+
+BOOST_AUTO_TEST_CASE(day_name_not_matching_date_is_invalid)
+{
+    BOOST_REQUIRE_THROW(date_time::parse("Tue, 1 Feb 2008 12:00:45 +0000"), std::domain_error);
+}
