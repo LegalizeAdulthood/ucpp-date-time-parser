@@ -33,6 +33,41 @@ namespace
 
 typedef ascii::space_type skipper;
 
+void validate_day(int day)
+{
+    if (day < 1 || day > 31) {
+        throw std::domain_error("day "
+            + boost::lexical_cast<std::string>(day)
+            + " out of range 1-31.");
+    }
+}
+
+void validate_year(int year)
+{
+    if (year < 1900) {
+        throw std::domain_error("year "
+            + boost::lexical_cast<std::string>(year)
+            + " before 1900.");
+    }
+}
+
+void validate_date(const ::date_time::date& date)
+{
+    try {
+        boost::gregorian::date check(date.year, date.month, date.day);
+        if (date.week_day == date_time::Unspecified) {
+            return;
+        }
+        if (static_cast<unsigned>(date.week_day) != check.day_of_week().as_number()) {
+            throw std::domain_error("day name doesn't match day of date");
+        }
+    } catch (const std::out_of_range&) {
+        throw std::domain_error("day "
+            + boost::lexical_cast<std::string>(date.day)
+            + " invalid for month");
+    }
+}
+
 template <typename Iter>
 struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
 {
@@ -63,39 +98,12 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         int_parser<int, 10, 4, 4> time_zone_offset;
         seconds = (':' >> digit_2) | attr(0);
         week_day = (day_names >> ',') | attr(date_time::Unspecified);
-        auto validate_day = [](int day, unused_type, unused_type) {
-            if (day < 1 || day > 31) {
-                throw std::domain_error("day "
-                    + boost::lexical_cast<std::string>(day)
-                    + " out of range 1-31.");
-            }
-        };
-        day_number %= digit_1_2[validate_day];
-        auto validate_year = [](int year, unused_type, unused_type) {
-            if (year < 1900) {
-                throw std::domain_error("year "
-                    + boost::lexical_cast<std::string>(year)
-                    + " before 1900.");
-            }
-        };
-        year_number %= digit_4[validate_year];
-        auto validate_date = [](const date_time::date& date, unused_type, unused_type) {
-            try {
-                boost::gregorian::date check(date.year, date.month, date.day);
-                if (date.week_day != date_time::Unspecified
-                    && static_cast<unsigned>(date.week_day) != check.day_of_week().as_number()) {
-                    throw std::domain_error("day name doesn't match day of date");
-                }
-            } catch (const std::out_of_range&) {
-                throw std::domain_error("day "
-                    + boost::lexical_cast<std::string>(date.day)
-                    + " invalid for month"); 
-            }
-        };
+        day_number %= digit_1_2[&validate_day];
+        year_number %= digit_4[&validate_year];
         date_part = week_day >> day_number >> month_names >> year_number;
         time_part = digit_2 >> no_skip[lit(':')] >> no_skip[digit_2]
             >> no_skip[seconds] >> time_zone_offset;
-        start %= date_part[validate_date] >> time_part;
+        start %= date_part[&validate_date] >> time_part;
     };
 
     symbols<char const, date_time::days> day_names;
