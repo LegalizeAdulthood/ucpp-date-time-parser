@@ -138,7 +138,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         comment = '(' >> *ccontent >> ')';
         ccontent = ctext | quoted_pair | comment;
         ctext = omit[ascii::graph - char_(R"comment_chars(()\)comment_chars")];
-        quoted_pair = omit[lexeme['\\' >> (ascii::graph | ' ' | '\t')]];
+        quoted_pair = omit['\\' >> (ascii::graph | ' ' | '\t')];
         date_time %= date_part[&validate_date] >> time_part >> (comment | eps);
         start %= date_time[&validate_date_time];
     };
@@ -154,8 +154,8 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
     rule<Iter, date_time::moment(), skipper> date_time;
     rule<Iter, skipper> comment;
     rule<Iter, skipper> ccontent;
-    rule<Iter, skipper> ctext;
-    rule<Iter, skipper> quoted_pair;
+    rule<Iter> ctext;
+    rule<Iter> quoted_pair;
     rule<Iter, date_time::moment(), skipper> start;
 };
 
