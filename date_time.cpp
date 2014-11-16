@@ -139,7 +139,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         ccontent = ctext | quoted_pair | comment;
         ctext = omit[ascii::graph - char_(R"comment_chars(()\)comment_chars")];
         quoted_pair = omit['\\' >> (ascii::graph | ' ' | '\t')];
-        date_time %= date_part[&validate_date] >> time_part >> (comment | eps);
+        date_time %= date_part[&validate_date] >> time_part >> -comment;
         start %= date_time[&validate_date_time];
     };
 
