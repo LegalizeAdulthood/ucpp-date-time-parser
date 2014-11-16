@@ -143,11 +143,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
         time_part %= digit_2[&validate_hour]
             >> no_skip[lit(':')] >> no_skip[digit_2[&validate_minute]]
             >> no_skip[seconds[&validate_second]] >> time_zone_offset;
-        comment = '(' >> *ccontent >> ')';
-        ccontent = ctext | quoted_pair | comment;
-        ctext = omit[ascii::graph - char_(R"comment_chars(()\)comment_chars")];
-        quoted_pair = omit['\\' >> (ascii::graph | char_(" \t"))];
-        date_time %= date_part[&validate_date] >> time_part >> -comment;
+        date_time %= date_part[&validate_date] >> time_part;
         start %= date_time[&validate_date_time];
     };
 
@@ -160,10 +156,6 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
     rule<Iter, unsigned()> seconds;
     rule<Iter, date_time::time(), skipper> time_part;
     rule<Iter, date_time::moment(), skipper> date_time;
-    rule<Iter, skipper> comment;
-    rule<Iter, skipper> ccontent;
-    rule<Iter> ctext;
-    rule<Iter> quoted_pair;
     rule<Iter, date_time::moment(), skipper> start;
 };
 
