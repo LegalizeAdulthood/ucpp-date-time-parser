@@ -1,12 +1,15 @@
 // Copyright (C) 2014, Richard Thomson.  All rights reserved.
-#include "date_time.h"
 #define BOOST_DATE_TIME_NO_LIB
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/include/qi.hpp>
+
 #include <sstream>
 #include <stdexcept>
+
+#include "cfws_skipper.h"
+#include "date_time.h"
 
 using namespace boost::spirit::qi;
 
@@ -103,22 +106,9 @@ void validate_date_time(::date_time::moment const& moment)
 }
 
 template <typename Iter>
-struct fws_skipper : grammar<Iter>
+struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter>>
 {
-    fws_skipper() : fws_skipper::base_type{start}
-    {
-        wsp = char_(" \t");
-        start = -(*wsp >> lit("\r\n")) >> wsp;
-    }
-
-    rule<Iter> start;
-    rule<Iter> wsp;
-};
-
-template <typename Iter>
-struct date_time_grammar : grammar<Iter, date_time::moment(), fws_skipper<Iter>>
-{
-    typedef fws_skipper<Iter> skipper;
+    typedef cfws::skipper<Iter> skipper;
 
     date_time_grammar() : date_time_grammar::base_type{start}
     {
@@ -188,7 +178,7 @@ moment parse(std::string const& text)
     std::string::const_iterator start{text.begin()};
     if (phrase_parse(start, text.end(),
             date_time_grammar<std::string::const_iterator>{},
-            fws_skipper<std::string::const_iterator>{}, result)
+            cfws::skipper<std::string::const_iterator>{}, result)
         && start == text.end())
     {
         return result;
