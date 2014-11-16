@@ -70,3 +70,7 @@ BOOST_AUTO_TEST_CASE(quoted_visible)
     execute(R"text((\(\)\\))text");
 }
 
+BOOST_AUTO_TEST_CASE(nested_comments)
+{
+    execute("(this is a comment (with another comment inside))");
+}

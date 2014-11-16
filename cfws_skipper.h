@@ -17,7 +17,7 @@ struct skipper : public boost::spirit::qi::grammar<Iter>
         fws = ((*wsp >> lit("\r\n")) | eps) >> wsp;
         ctext = ascii::graph - char_(R"chars(()\)chars");
         quoted_pair = lit('\\') >> (ascii::graph | wsp);
-        ccontent = ctext | quoted_pair;
+        ccontent = ctext | quoted_pair | comment;
         comment = lit('(') >> *(-fws >> ccontent) >> -fws >> lit(')');
         cfwsp = (+(-fws >> comment) >> -fws)
             | fws;
