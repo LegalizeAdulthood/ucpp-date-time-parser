@@ -135,10 +135,12 @@ BOOST_AUTO_TEST_CASE(seconds_outside_0_to_60_are_invalid)
 BOOST_AUTO_TEST_CASE(leap_second_only_added_on_last_day_of_June_or_December)
 {
     BOOST_REQUIRE_THROW(date_time::parse("1 Feb 2008 23:59:60 +0000"), std::domain_error);
+    BOOST_REQUIRE_THROW(date_time::parse("29 Jun 2008 23:59:60 +0000"), std::domain_error);
     BOOST_REQUIRE_THROW(date_time::parse("30 Jun 2008 00:00:60 +0000"), std::domain_error);
     BOOST_REQUIRE_THROW(date_time::parse("30 Jun 2008 00:59:60 +0000"), std::domain_error);
     BOOST_REQUIRE_THROW(date_time::parse("30 Jun 2008 23:00:60 +0000"), std::domain_error);
     BOOST_REQUIRE_NO_THROW(date_time::parse("30 Jun 2008 23:59:60 +0000"));
+    BOOST_REQUIRE_THROW(date_time::parse("30 Dec 2008 23:59:60 +0000"), std::domain_error);
     BOOST_REQUIRE_THROW(date_time::parse("31 Dec 2008 00:00:60 +0000"), std::domain_error);
     BOOST_REQUIRE_THROW(date_time::parse("31 Dec 2008 00:59:60 +0000"), std::domain_error);
     BOOST_REQUIRE_THROW(date_time::parse("31 Dec 2008 23:00:60 +0000"), std::domain_error);

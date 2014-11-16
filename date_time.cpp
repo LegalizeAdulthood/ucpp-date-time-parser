@@ -87,11 +87,16 @@ void validate_second(unsigned second)
     validate_min_max("second", second, 0, 60);
 }
 
+bool last_day_of_June_or_December(::date_time::date const& date)
+{
+    return (date.month == ::date_time::June && date.day == 30)
+        || (date.month == ::date_time::December && date.day == 31);
+}
+
 void validate_date_time(::date_time::moment const& moment)
 {
     if (moment.second.second == 60
-        && !((moment.first.month == ::date_time::June
-            || moment.first.month == ::date_time::December)
+        && !(last_day_of_June_or_December(moment.first)
             && moment.second.hour == 23
             && moment.second.minute == 59)) {
         throw std::domain_error(
