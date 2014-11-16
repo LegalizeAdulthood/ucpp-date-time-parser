@@ -4,6 +4,8 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/include/qi.hpp>
+#define BOOST_SPIRIT_USE_PHOENIX_V3
+#include <boost/spirit/include/phoenix.hpp>
 
 #include <sstream>
 #include <stdexcept>
@@ -138,7 +140,8 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
         seconds = (':' >> digit_2) | attr(0);
         week_day = (day_names >> ',') | attr(date_time::Unspecified);
         day_number %= digit_1_2[&validate_day];
-        year_number %= digit_4[&validate_year];
+        year_2 %= digit_2[_val += if_else(_1 < 50U, 2000U, 1900U)];
+        year_number %= (digit_4 | year_2)[&validate_year];
         date_part = week_day >> day_number >> month_names >> year_number;
         time_part %= digit_2[&validate_hour]
             >> no_skip[lit(':')] >> no_skip[digit_2[&validate_minute]]
@@ -149,9 +152,10 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
 
     symbols<char const, date_time::days> day_names;
     rule<Iter, date_time::days()> week_day;
-    rule<Iter, unsigned(), skipper> day_number;
+    rule<Iter, unsigned()> day_number;
     symbols<char const, date_time::months> month_names;
-    rule<Iter, unsigned(), skipper> year_number;
+    rule<Iter, unsigned()> year_number;
+    rule<Iter, unsigned()> year_2;
     rule<Iter, date_time::date(), skipper> date_part;
     rule<Iter, unsigned()> seconds;
     rule<Iter, date_time::time(), skipper> time_part;

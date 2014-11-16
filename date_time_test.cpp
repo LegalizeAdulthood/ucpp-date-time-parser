@@ -189,3 +189,17 @@ BOOST_AUTO_TEST_CASE(folded_whitespace_allowed)
         FWS "Date)"));
 #undef FWS
 }
+
+BOOST_AUTO_TEST_CASE(obsolete_year_pre_2000)
+{
+    auto value = date_time::parse("9 Jan 80 12:00:45 -0400");
+
+    BOOST_REQUIRE_EQUAL(1980, value.first.year);
+}
+
+BOOST_AUTO_TEST_CASE(obsolete_year_post_2000)
+{
+    auto value = date_time::parse("9 Jan 00 12:00:45 -0400");
+
+    BOOST_REQUIRE_EQUAL(2000, value.first.year);
+}
