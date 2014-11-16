@@ -60,3 +60,13 @@ BOOST_AUTO_TEST_CASE(skips_comments_with_leading_and_trailing_spaces)
     execute("( this is a comment )");
 }
 
+BOOST_AUTO_TEST_CASE(quoted_whitespace)
+{
+    execute("(\\ \\\t)");
+}
+
+BOOST_AUTO_TEST_CASE(quoted_visible)
+{
+    execute(R"text((\(\)\\))text");
+}
+
