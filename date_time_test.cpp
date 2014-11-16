@@ -174,3 +174,18 @@ BOOST_AUTO_TEST_CASE(comment_delimiters_must_be_matched_or_quoted)
     BOOST_REQUIRE_NO_THROW(date_time::parse(R"date(Sat, 9 Jan 2010 12:00:45 -0400 (Starting \(Date))date"));
     BOOST_REQUIRE_NO_THROW(date_time::parse(R"date(Sat, 9 Jan 2010 12:00:45 -0400 (Starting Date\)))date"));
 }
+
+BOOST_AUTO_TEST_CASE(folded_whitespace_allowed)
+{
+#define FWS "\r\n\t"
+    BOOST_REQUIRE_NO_THROW(date_time::parse(
+        FWS "Sat,"
+        FWS "9"
+        FWS "Jan"
+        FWS "2010"
+        FWS "12:34:56"
+        FWS "-0400"
+        FWS "(Starting"
+        FWS "Date)"));
+#undef FWS
+}

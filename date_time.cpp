@@ -32,8 +32,6 @@ BOOST_FUSION_ADAPT_STRUCT(::date_time::moment,
 namespace
 {
 
-typedef ascii::space_type skipper;
-
 void validate_min_max(char const* name,
     unsigned value, unsigned min_value, unsigned max_value)
 {
@@ -105,8 +103,23 @@ void validate_date_time(::date_time::moment const& moment)
 }
 
 template <typename Iter>
-struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
+struct fws_skipper : grammar<Iter>
 {
+    fws_skipper() : fws_skipper::base_type{start}
+    {
+        wsp = char_(" \t");
+        start = -(*wsp >> lit("\r\n")) >> wsp;
+    }
+
+    rule<Iter> start;
+    rule<Iter> wsp;
+};
+
+template <typename Iter>
+struct date_time_grammar : grammar<Iter, date_time::moment(), fws_skipper<Iter>>
+{
+    typedef fws_skipper<Iter> skipper;
+
     date_time_grammar() : date_time_grammar::base_type{start}
     {
         month_names.add("Jan", date_time::January)
@@ -143,7 +156,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), skipper>
         comment = '(' >> *ccontent >> ')';
         ccontent = ctext | quoted_pair | comment;
         ctext = omit[ascii::graph - char_(R"comment_chars(()\)comment_chars")];
-        quoted_pair = omit['\\' >> (ascii::graph | ' ' | '\t')];
+        quoted_pair = omit['\\' >> (ascii::graph | char_(" \t"))];
         date_time %= date_part[&validate_date] >> time_part >> -comment;
         start %= date_time[&validate_date_time];
     };
@@ -175,7 +188,7 @@ moment parse(std::string const& text)
     std::string::const_iterator start{text.begin()};
     if (phrase_parse(start, text.end(),
             date_time_grammar<std::string::const_iterator>{},
-            ascii::space, result)
+            fws_skipper<std::string::const_iterator>{}, result)
         && start == text.end())
     {
         return result;
