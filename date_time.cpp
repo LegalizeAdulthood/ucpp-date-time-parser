@@ -135,13 +135,15 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
             ("Sun", date_time::Sunday);
         uint_parser<unsigned, 10, 1, 2> digit_1_2;
         uint_parser<unsigned, 10, 2, 2> digit_2;
+        uint_parser<unsigned, 10, 3, 3> digit_3;
         uint_parser<unsigned, 10, 4, 4> digit_4;
         int_parser<int, 10, 4, 4> time_zone_offset;
         seconds = (':' >> digit_2) | attr(0);
         week_day = (day_names >> ',') | attr(date_time::Unspecified);
         day_number %= digit_1_2[&validate_day];
         year_2 %= digit_2[_val += if_else(_1 < 50U, 2000U, 1900U)];
-        year_number %= (digit_4 | year_2)[&validate_year];
+        year_3 %= digit_3[_val += 1900];
+        year_number %= (digit_4 | year_3 | year_2)[&validate_year];
         date_part = week_day >> day_number >> month_names >> year_number;
         time_part %= digit_2[&validate_hour]
             >> no_skip[lit(':')] >> no_skip[digit_2[&validate_minute]]
@@ -155,6 +157,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
     rule<Iter, unsigned()> day_number;
     symbols<char const, date_time::months> month_names;
     rule<Iter, unsigned()> year_number;
+    rule<Iter, unsigned()> year_3;
     rule<Iter, unsigned()> year_2;
     rule<Iter, date_time::date(), skipper> date_part;
     rule<Iter, unsigned()> seconds;

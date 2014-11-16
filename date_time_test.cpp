@@ -203,3 +203,10 @@ BOOST_AUTO_TEST_CASE(obsolete_year_post_2000)
 
     BOOST_REQUIRE_EQUAL(2000, value.first.year);
 }
+
+BOOST_AUTO_TEST_CASE(obsolete_3_digit_year)
+{
+    auto value = date_time::parse("9 Jan 000 12:00:45 -0400");
+
+    BOOST_REQUIRE_EQUAL(1900, value.first.year);
+}
