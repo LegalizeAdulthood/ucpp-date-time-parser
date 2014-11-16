@@ -8,16 +8,28 @@ namespace cfws
 {
 
 template <typename Iter>
-struct skipper : boost::spirit::qi::grammar<Iter>
+struct skipper : public boost::spirit::qi::grammar<Iter>
 {
     skipper() : skipper::base_type{start}
     {
+        using namespace boost::spirit::qi;
         wsp = char_(" \t");
-        start = -(*wsp >> lit("\r\n")) >> wsp;
+        fws = ((*wsp >> lit("\r\n")) | eps) >> wsp;
+        ctext = ascii::graph - char_(R"chars(()\)chars");
+        ccontent = ctext;
+        comment = lit('(') >> *(-fws >> ccontent) >> -fws >> lit(')');
+        cfwsp = (+(-fws >> comment) >> -fws)
+            | fws;
+        start = cfwsp;
     }
 
-    boost::spirit::qi::rule<Iter> start;
     boost::spirit::qi::rule<Iter> wsp;
+    boost::spirit::qi::rule<Iter> fws;
+    boost::spirit::qi::rule<Iter> ctext;
+    boost::spirit::qi::rule<Iter> ccontent;
+    boost::spirit::qi::rule<Iter> comment;
+    boost::spirit::qi::rule<Iter> cfwsp;
+    boost::spirit::qi::rule<Iter> start;
 };
 
 }

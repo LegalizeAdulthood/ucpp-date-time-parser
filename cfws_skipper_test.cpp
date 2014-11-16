@@ -49,3 +49,14 @@ BOOST_AUTO_TEST_CASE(skips_folded_whitespace_at_end)
 {
     execute(" \t \t \r\n ");
 }
+
+BOOST_AUTO_TEST_CASE(skips_comments)
+{
+    execute("(this is a comment)");
+}
+
+BOOST_AUTO_TEST_CASE(skips_comments_with_leading_and_trailing_spaces)
+{
+    execute("( this is a comment )");
+}
+
