@@ -11,7 +11,7 @@ using namespace boost::spirit::qi;
 namespace
 {
 
-void execute(std::string const& skipped)
+bool validate(std::string const& skipped)
 {
     const std::string text{skipped + "STOP"};
     auto start = text.begin();
@@ -19,8 +19,13 @@ void execute(std::string const& skipped)
     bool result = phrase_parse(start, text.end(),
         eps, cfws::skipper<std::string::const_iterator>());
 
-    BOOST_REQUIRE(result);
-    BOOST_REQUIRE_EQUAL("STOP", (std::string{start, text.end()}));
+    return result
+        && "STOP" == std::string{start, text.end()};
+}
+
+void execute(std::string const& skipped)
+{
+    BOOST_REQUIRE(validate(skipped));
 }
 
 }
@@ -73,4 +78,16 @@ BOOST_AUTO_TEST_CASE(quoted_visible)
 BOOST_AUTO_TEST_CASE(nested_comments)
 {
     execute("(this is a comment (with another comment inside))");
+}
+
+BOOST_AUTO_TEST_CASE(obsolete_comment_can_contain_control_characters)
+{
+    BOOST_REQUIRE(validate("(\x01\x02\x03\x04)"));
+    BOOST_REQUIRE(validate("(\x05\x06\x07\x08)"));
+    BOOST_REQUIRE(validate("(\x0b\x0c)"));
+    BOOST_REQUIRE(validate("(\x0e\x0f)"));
+    BOOST_REQUIRE(validate("(\x10\x11\x12\x13)"));
+    BOOST_REQUIRE(validate("(\x14\x15\x16\x17)"));
+    BOOST_REQUIRE(validate("(\x18\x19\x1a\x1b)"));
+    BOOST_REQUIRE(validate("(\x1c\x1d\x1e\x1f)"));
 }

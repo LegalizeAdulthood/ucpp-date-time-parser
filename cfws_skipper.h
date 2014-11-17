@@ -13,9 +13,10 @@ struct skipper : public boost::spirit::qi::grammar<Iter>
     skipper() : skipper::base_type{start}
     {
         using namespace boost::spirit::qi;
-        wsp = char_(" \t");
+        wsp = ascii::blank;
         fws = ((*wsp >> lit("\r\n")) | eps) >> wsp;
-        ctext = ascii::graph - char_(R"chars(()\)chars");
+        ctext = (ascii::graph - char_(R"chars(()\)chars"))
+            | char_(1, 8) | char_(11, 12) | char_(14, 31);
         quoted_pair = lit('\\') >> (ascii::graph | wsp);
         ccontent = ctext | quoted_pair | comment;
         comment = lit('(') >> *(-fws >> ccontent) >> -fws >> lit(')');
