@@ -7,6 +7,7 @@
 #define BOOST_SPIRIT_USE_PHOENIX_V3
 #include <boost/spirit/include/phoenix.hpp>
 
+#include <cmath>
 #include <sstream>
 #include <stdexcept>
 
@@ -50,12 +51,12 @@ void validate_min_max(char const* name,
 
 void validate_day(unsigned day)
 {
-    validate_min_max("day", day, 1, 31);
+    validate_min_max("day", day, 1U, 31U);
 }
 
 void validate_year(unsigned year)
 {
-    validate_min_max("year", year, 1900, 9999);
+    validate_min_max("year", year, 1900U, 9999U);
 }
 
 void validate_date(const ::date_time::date& date)
@@ -77,17 +78,17 @@ void validate_date(const ::date_time::date& date)
 
 void validate_hour(unsigned hour)
 {
-    validate_min_max("hour", hour, 0, 23);
+    validate_min_max("hour", hour, 0U, 23U);
 }
 
 void validate_minute(unsigned minute)
 {
-    validate_min_max("minute", minute, 0, 59);
+    validate_min_max("minute", minute, 0U, 59U);
 }
 
 void validate_second(unsigned second)
 {
-    validate_min_max("second", second, 0, 60);
+    validate_min_max("second", second, 0U, 60U);
 }
 
 bool last_day_of_June_or_December(::date_time::date const& date)
@@ -105,6 +106,14 @@ void validate_date_time(::date_time::moment const& moment)
         throw std::domain_error(
             "leap second only allowed on last day of June or December");
     }
+}
+
+void validate_time_zone_offset(int offset)
+{
+    validate_min_max("timezone offset hour",
+        static_cast<unsigned>(std::abs(offset) / 100), 0U, 23U);
+    validate_min_max("timezone offset minute",
+        static_cast<unsigned>(offset % 100), 0U, 59U);
 }
 
 template <typename Iter>
@@ -159,10 +168,12 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
             ("R", +500)("S", + 600)("T", + 700)("U", +800)
             ("V", +900)("W", +1000)("X", +1100)("Y", +1200)
             ("Z", +000);
+        time_zone %= time_zone_names
+            | (&(lit('+') | '-') >> time_zone_offset)[&validate_time_zone_offset];
         time_part %= digit_2[&validate_hour]
             >> lit(':') >> digit_2[&validate_minute]
             >> seconds[&validate_second]
-            >> (time_zone_names | time_zone_offset);
+            >> time_zone;
         date_time %= date_part[&validate_date] >> time_part;
         start %= date_time[&validate_date_time];
     };
@@ -176,7 +187,8 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
     rule<Iter, unsigned()> year_2;
     rule<Iter, date_time::date(), skipper> date_part;
     rule<Iter, unsigned(), skipper> seconds;
-    symbols<char const, unsigned> time_zone_names;
+    symbols<char const, int> time_zone_names;
+    rule<Iter, int()> time_zone;
     rule<Iter, date_time::time(), skipper> time_part;
     rule<Iter, date_time::moment(), skipper> date_time;
     rule<Iter, date_time::moment(), skipper> start;
