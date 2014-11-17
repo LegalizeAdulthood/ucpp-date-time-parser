@@ -147,16 +147,18 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
 
         seconds = (':' >> digit_2) | attr(0);
         int_parser<int, 10, 4, 4> time_zone_offset;
-        time_zone_names.add("UT", +0000)
-            ("GMT", +0000)
-            ("EST", - 500)
-            ("EDT", - 400)
-            ("CST", - 600)
-            ("CDT", - 500)
-            ("MST", - 700)
-            ("MDT", - 600)
-            ("PST", - 800)
-            ("PDT", - 700);
+        time_zone_names.add("UT", +000)("GMT", +000)
+            ("EST", -500)("EDT", -400)
+            ("CST", -600)("CDT", -500)
+            ("MST", -700)("MDT", -600)
+            ("PST", -800)("PDT", -700)
+            ("A", -100)("B", - 200)("C", - 300)("D", -400)
+            ("E", -500)("F", - 600)("G", - 700)("H", -800)
+            ("I", -900)("K", -1000)("L", -1100)("M", -1200)
+            ("N", +100)("O", + 200)("P", + 300)("Q", +400)
+            ("R", +500)("S", + 600)("T", + 700)("U", +800)
+            ("V", +900)("W", +1000)("X", +1100)("Y", +1200)
+            ("Z", +000);
         time_part %= digit_2[&validate_hour]
             >> lit(':') >> digit_2[&validate_minute]
             >> seconds[&validate_second]

@@ -233,3 +233,32 @@ BOOST_AUTO_TEST_CASE(obsolete_time_zones)
     BOOST_REQUIRE(validate_time_zone("PST", -800));
     BOOST_REQUIRE(validate_time_zone("PDT", -700));
 }
+
+BOOST_AUTO_TEST_CASE(obsolete_military_time_zones)
+{
+    BOOST_REQUIRE(validate_time_zone("Z", 0));
+    BOOST_REQUIRE(validate_time_zone("A", -100));
+    BOOST_REQUIRE(validate_time_zone("B", -200));
+    BOOST_REQUIRE(validate_time_zone("C", -300));
+    BOOST_REQUIRE(validate_time_zone("D", -400));
+    BOOST_REQUIRE(validate_time_zone("E", -500));
+    BOOST_REQUIRE(validate_time_zone("F", -600));
+    BOOST_REQUIRE(validate_time_zone("G", -700));
+    BOOST_REQUIRE(validate_time_zone("H", -800));
+    BOOST_REQUIRE(validate_time_zone("I", -900));
+    BOOST_REQUIRE(validate_time_zone("K", -1000));
+    BOOST_REQUIRE(validate_time_zone("L", -1100));
+    BOOST_REQUIRE(validate_time_zone("M", -1200));
+    BOOST_REQUIRE(validate_time_zone("N", +100));
+    BOOST_REQUIRE(validate_time_zone("O", +200));
+    BOOST_REQUIRE(validate_time_zone("P", +300));
+    BOOST_REQUIRE(validate_time_zone("Q", +400));
+    BOOST_REQUIRE(validate_time_zone("R", +500));
+    BOOST_REQUIRE(validate_time_zone("S", +600));
+    BOOST_REQUIRE(validate_time_zone("T", +700));
+    BOOST_REQUIRE(validate_time_zone("U", +800));
+    BOOST_REQUIRE(validate_time_zone("V", +900));
+    BOOST_REQUIRE(validate_time_zone("W", +1000));
+    BOOST_REQUIRE(validate_time_zone("X", +1100));
+    BOOST_REQUIRE(validate_time_zone("Y", +1200));
+}
