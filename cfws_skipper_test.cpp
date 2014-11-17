@@ -91,3 +91,22 @@ BOOST_AUTO_TEST_CASE(obsolete_comment_can_contain_control_characters)
     BOOST_REQUIRE(validate("(\x18\x19\x1a\x1b)"));
     BOOST_REQUIRE(validate("(\x1c\x1d\x1e\x1f)"));
 }
+
+BOOST_AUTO_TEST_CASE(obsolete_quoted_null)
+{
+    std::string null{};
+    null.push_back(0);
+    execute(R"((\)" + null + ")");
+}
+
+BOOST_AUTO_TEST_CASE(obsolete_quoted_control)
+{
+    BOOST_REQUIRE(validate("(\\\x01\\\x02\\\x03\\\x04)"));
+    BOOST_REQUIRE(validate("(\\\x05\\\x06\\\x07\\\x08)"));
+    BOOST_REQUIRE(validate("(\\\x0b\\\x0c)"));
+    BOOST_REQUIRE(validate("(\\\x0e\\\x0f)"));
+    BOOST_REQUIRE(validate("(\\\x10\\\x11\\\x12\\\x13)"));
+    BOOST_REQUIRE(validate("(\\\x14\\\x15\\\x16\\\x17)"));
+    BOOST_REQUIRE(validate("(\\\x18\\\x19\\\x1a\\\x1b)"));
+    BOOST_REQUIRE(validate("(\\\x1c\\\x1d\\\x1e\\\x1f)"));
+}
