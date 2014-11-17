@@ -114,6 +114,11 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
 
     date_time_grammar() : date_time_grammar::base_type{start}
     {
+        uint_parser<unsigned, 10, 1, 2> digit_1_2;
+        uint_parser<unsigned, 10, 2, 2> digit_2;
+        uint_parser<unsigned, 10, 3, 3> digit_3;
+        uint_parser<unsigned, 10, 4, 4> digit_4;
+
         month_names.add("Jan", date_time::January)
             ("Feb", date_time::February)
             ("Mar", date_time::March)
@@ -133,21 +138,29 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
             ("Fri", date_time::Friday)
             ("Sat", date_time::Saturday)
             ("Sun", date_time::Sunday);
-        uint_parser<unsigned, 10, 1, 2> digit_1_2;
-        uint_parser<unsigned, 10, 2, 2> digit_2;
-        uint_parser<unsigned, 10, 3, 3> digit_3;
-        uint_parser<unsigned, 10, 4, 4> digit_4;
-        int_parser<int, 10, 4, 4> time_zone_offset;
-        seconds = (':' >> digit_2) | attr(0);
         week_day = (day_names >> ',') | attr(date_time::Unspecified);
         day_number %= digit_1_2[&validate_day];
         year_2 %= digit_2[_val += if_else(_1 < 50U, 2000U, 1900U)];
         year_3 %= digit_3[_val += 1900];
         year_number %= (digit_4 | year_3 | year_2)[&validate_year];
         date_part = week_day >> day_number >> month_names >> year_number;
+
+        seconds = (':' >> digit_2) | attr(0);
+        int_parser<int, 10, 4, 4> time_zone_offset;
+        time_zone_names.add("UT", +0000)
+            ("GMT", +0000)
+            ("EST", - 500)
+            ("EDT", - 400)
+            ("CST", - 600)
+            ("CDT", - 500)
+            ("MST", - 700)
+            ("MDT", - 600)
+            ("PST", - 800)
+            ("PDT", - 700);
         time_part %= digit_2[&validate_hour]
             >> lit(':') >> digit_2[&validate_minute]
-            >> seconds[&validate_second] >> time_zone_offset;
+            >> seconds[&validate_second]
+            >> (time_zone_names | time_zone_offset);
         date_time %= date_part[&validate_date] >> time_part;
         start %= date_time[&validate_date_time];
     };
@@ -161,6 +174,7 @@ struct date_time_grammar : grammar<Iter, date_time::moment(), cfws::skipper<Iter
     rule<Iter, unsigned()> year_2;
     rule<Iter, date_time::date(), skipper> date_part;
     rule<Iter, unsigned(), skipper> seconds;
+    symbols<char const, unsigned> time_zone_names;
     rule<Iter, date_time::time(), skipper> time_part;
     rule<Iter, date_time::moment(), skipper> date_time;
     rule<Iter, date_time::moment(), skipper> start;

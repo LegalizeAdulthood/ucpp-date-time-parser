@@ -212,3 +212,24 @@ BOOST_AUTO_TEST_CASE(obsolete_time_allows_whitespace_between_tokens)
     BOOST_REQUIRE_NO_THROW(date_time::parse("9 Jan 2010 12:34:" CFWS "45 -0400"));
 #undef CFWS
 }
+
+bool validate_time_zone(char const* name, unsigned offset)
+{
+    const auto value = date_time::parse("9 Jan 2010 12:34:45 " + std::string{name});
+
+    return value.second.time_zone_offset == offset;
+}
+
+BOOST_AUTO_TEST_CASE(obsolete_time_zones)
+{
+    BOOST_REQUIRE(validate_time_zone("UT", 0));
+    BOOST_REQUIRE(validate_time_zone("GMT", 0));
+    BOOST_REQUIRE(validate_time_zone("EST", -500));
+    BOOST_REQUIRE(validate_time_zone("EDT", -400));
+    BOOST_REQUIRE(validate_time_zone("CST", -600));
+    BOOST_REQUIRE(validate_time_zone("CDT", -500));
+    BOOST_REQUIRE(validate_time_zone("MST", -700));
+    BOOST_REQUIRE(validate_time_zone("MDT", -600));
+    BOOST_REQUIRE(validate_time_zone("PST", -800));
+    BOOST_REQUIRE(validate_time_zone("PDT", -700));
+}
