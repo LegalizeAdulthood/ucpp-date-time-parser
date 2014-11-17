@@ -4,7 +4,6 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/include/qi.hpp>
-#define BOOST_SPIRIT_USE_PHOENIX_V3
 #include <boost/spirit/include/phoenix.hpp>
 
 #include <cmath>
