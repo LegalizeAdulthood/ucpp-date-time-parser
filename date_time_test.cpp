@@ -74,14 +74,6 @@ BOOST_AUTO_TEST_CASE(weekday)
     BOOST_REQUIRE_EQUAL(date_time::Saturday, value.week_day);
 }
 
-BOOST_AUTO_TEST_CASE(no_space_allowed_in_time)
-{
-    BOOST_REQUIRE_THROW(date_time::parse("9 Jan 2010 12 :00:45 +0000"), std::domain_error);
-    BOOST_REQUIRE_THROW(date_time::parse("9 Jan 2010 12: 00:45 +0000"), std::domain_error);
-    BOOST_REQUIRE_THROW(date_time::parse("9 Jan 2010 12:00 :45 +0000"), std::domain_error);
-    BOOST_REQUIRE_THROW(date_time::parse("9 Jan 2010 12:00: 45 +0000"), std::domain_error);
-}
-
 BOOST_AUTO_TEST_CASE(no_space_allowed_in_weekday)
 {
     BOOST_REQUIRE_THROW(date_time::parse("Sat , 9 Jan 2010 12:00:45 -0400"), std::domain_error);
@@ -209,4 +201,14 @@ BOOST_AUTO_TEST_CASE(obsolete_3_digit_year)
     auto value = date_time::parse("9 Jan 000 12:00:45 -0400");
 
     BOOST_REQUIRE_EQUAL(1900, value.first.year);
+}
+
+BOOST_AUTO_TEST_CASE(obsolete_time_allows_whitespace_between_tokens)
+{
+#define CFWS "\r\n    (comment) "
+    BOOST_REQUIRE_NO_THROW(date_time::parse("9 Jan 2010 12" CFWS ":34:45 -0400"));
+    BOOST_REQUIRE_NO_THROW(date_time::parse("9 Jan 2010 12:" CFWS "34:45 -0400"));
+    BOOST_REQUIRE_NO_THROW(date_time::parse("9 Jan 2010 12:34" CFWS ":45 -0400"));
+    BOOST_REQUIRE_NO_THROW(date_time::parse("9 Jan 2010 12:34:" CFWS "45 -0400"));
+#undef CFWS
 }
