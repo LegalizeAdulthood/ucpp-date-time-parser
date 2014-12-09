@@ -2,6 +2,7 @@
 #define BOOST_DATE_TIME_NO_LIB
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/fusion/include/std_pair.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
@@ -27,11 +28,6 @@ BOOST_FUSION_ADAPT_STRUCT(::date_time::time,
     (unsigned, minute)
     (unsigned, second)
     (int, time_zone_offset)
-);
-
-BOOST_FUSION_ADAPT_STRUCT(::date_time::moment,
-    (::date_time::date, first)
-    (::date_time::time, second)
 );
 
 namespace
