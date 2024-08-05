@@ -148,3 +148,9 @@ RFC 5322 Date Productions
 
    obs-FWS         =   1*WSP *(CRLF 1*WSP)
 ```
+
+This repository contains source code to accompany a Utah C++ Programmers presentation.
+
+[Utah C++ Programmers](https://meetup.com/utah-cpp-programmers)\
+[Past Topics](https://utahcpp.wordpress.com/past-meeting-topics/)\
+[Future Topics](https://utahcpp.wordpress.com/future-meeting-topics/)
