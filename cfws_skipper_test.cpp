@@ -29,7 +29,7 @@ bool fixture::execute(std::string const& skipped)
     start = text.begin();
 
     return phrase_parse(start, text.end(), eps,
-        cfws::skipper<std::string::const_iterator>());
+        cfws::skipper<decltype(start)>());
 }
 
 }
